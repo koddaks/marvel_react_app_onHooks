@@ -11,9 +11,9 @@ const CharList = (props) =>  {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)
     const [newItemLoading, setNewItemLoading] = useState(false)
-    const [offset, setOffset] = useState(1)
-    const [limit, setLimit] = useState(9)
+    const [offset, setOffset] = useState(1)    
     const [charEnded, setCharEnded] = useState(false)
+    const limit = 9;
 
     
 
