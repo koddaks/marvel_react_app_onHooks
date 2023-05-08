@@ -1,46 +1,42 @@
 import md5 from 'blueimp-md5';
+import { useHttp } from '../hooks/http.hook';
 
-class MarvelService {
-  _apiBase = 'https://gateway.marvel.com:443/v1/public/';
-  _apiKey = '6a44f7c28766c03b37de408a7d605f26';
-  _baseOffset = 210
-  _baseLimit = 9
+const  useMarvelService = () => {
+  const {loading, request, error, clearError} = useHttp();
 
-  getHash = (timeStamp, apikey) => {
+
+  const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
+  const _apiKey = '6a44f7c28766c03b37de408a7d605f26';
+  const _baseOffset = 210
+  const _baseLimit = 9
+
+  const getHash = (timeStamp, apikey) => {
     return md5(
       timeStamp + '2154bb8e0e7d81078f146c75e0f51bb433c116b3' + apikey
     );
   };
 
-  getResource = async (url) => {
-    let res = await fetch(url);
+  
 
-    if (!res.ok) {
-      throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-    }
-
-    return await res.json();
-  };
-
-  getAllCharacters = async (offset = this._baseOffset, limit = this._baseLimit) => {
+  const getAllCharacters = async (offset = _baseOffset, limit = _baseLimit) => {
     const timeStamp = +new Date();
-    const hash = this.getHash(timeStamp, this._apiKey);
-    const res = await this.getResource(
-      `${this._apiBase}characters?limit=${limit}&offset=${offset}?&ts=${timeStamp}&apikey=${this._apiKey}&hash=${hash}`
+    const hash = getHash(timeStamp, _apiKey);
+    const res = await request(
+      `${_apiBase}characters?limit=${limit}&offset=${offset}?&ts=${timeStamp}&apikey=${_apiKey}&hash=${hash}`
     );
-    return res.data.results.map(this._transformCharacter);
+    return res.data.results.map(_transformCharacter);
   };
 
-  getCharacter = async (id) => {
+  const getCharacter = async (id) => {
     const timeStamp = +new Date();
-    const hash = this.getHash(timeStamp, this._apiKey);
-    const res = await this.getResource(
-      `${this._apiBase}characters/${id}?&ts=${timeStamp}&apikey=${this._apiKey}&hash=${hash}`
+    const hash = getHash(timeStamp, _apiKey);
+    const res = await request(
+      `${_apiBase}characters/${id}?&ts=${timeStamp}&apikey=${_apiKey}&hash=${hash}`
     );
-    return this._transformCharacter(res.data.results[0])
+    return _transformCharacter(res.data.results[0])
   };
 
-  _transformCharacter = (char) => {
+  const _transformCharacter = (char) => {
     const descr = char.description.length === 0 ? 'There is no description for this character' : char.description.length > 190 ? char.description.slice(0,190) + '...' : char.description;
     return {
       id: char.id,
@@ -52,6 +48,8 @@ class MarvelService {
       comics: char.comics.items
     }   
   }
+
+  return {loading, error, getAllCharacters, getCharacter, clearError}
 }
 
-export default MarvelService;
+export default useMarvelService;

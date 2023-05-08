@@ -1,61 +1,47 @@
 import { useState, useEffect, useRef } from 'react';
 import './charList.scss';
 
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
 
 const CharList = (props) =>  {
 
-    const [charList, setCharList] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(false)
+    const [charList, setCharList] = useState([])   
     const [newItemLoading, setNewItemLoading] = useState(false)
-    const [offset, setOffset] = useState(1)    
+    const [offset, setOffset] = useState(210)    
     const [charEnded, setCharEnded] = useState(false)
     const limit = 9;
 
     
 
-    const marvelService = new MarvelService();
+    const {loading, error, getAllCharacters} = useMarvelService();
 
     useEffect(() => {
-        onRequest()
+        onRequest(offset, limit, true)
     }, [])
 
-    const onRequest = (offset, limit) => {
-        onCharListLoading();
-        marvelService.getAllCharacters(offset, limit)
-        .then(onCharListLoaded)
-        .catch(onError)
+    const onRequest = (offset, limit, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true)        
+        getAllCharacters(offset, limit)
+        .then(onCharListLoaded)        
     }
     
-    const onCharListLoading = () => {
-        setNewItemLoading(true)
-    }
+    
 
     const onCharListLoaded = (newCharList) => {
         let ended = false;
         if (newCharList.length < 9) {
             ended = true;            
         }        
-        setCharList(charList => [...charList, ...newCharList])
-        setLoading(loading => false)
-        setError(error => false)
+        setCharList(charList => [...charList, ...newCharList])       
         setNewItemLoading(newItemLoading => false)
         setOffset(offset => offset + limit)
         setCharEnded(charEnded => ended)
     }
 
-    const onError = () => {
-        setError(true);
-        setLoading(false)
-    }
 
-
-    const itemRefs = useRef([]);
-
-    
+    const itemRefs = useRef([]);   
 
     const focusOnItem = (id) => {       
         itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
@@ -100,15 +86,15 @@ const CharList = (props) =>  {
         
         const elements = CreateCharListItems(charList)
         const errorMessage = error ? <ErrorMessage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error) ? elements : null
+        const spinner = loading && !newItemLoading ? <Spinner/> : null;
+        
 
 
         return (
             <div className="char__list">
                 {errorMessage}
                 {spinner}
-                {content}
+                {elements}
                 <button 
                     className="button button__main button__long"
                     disabled={newItemLoading}
