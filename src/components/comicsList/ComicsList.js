@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -14,7 +15,7 @@ const [offset, setOffset] = useState(0)
 const [comicsEnded, setComicsEnded] = useState(false)
 const limit = 8;
 
-const {loading, error, getComics} = useMarvelService();
+const {loading, error, getAllComics} = useMarvelService();
 
 useEffect(() => {
     onRequest(offset, limit, true)
@@ -22,7 +23,7 @@ useEffect(() => {
 
 const onRequest = (offset, initial) => {
     initial ? setNewComicsLoading(false) : setNewComicsLoading(true)
-    getComics(offset, limit)
+    getAllComics(offset, limit)
     .then(onComicsListLoaded)
 }
 const onComicsListLoaded = (newComicsList) => {
@@ -34,19 +35,19 @@ const onComicsListLoaded = (newComicsList) => {
     setNewComicsLoading(false)
     setOffset(offset + limit)
     setComicsEnded(comicsEnded => ended) 
-    console.log(comicsList)   
+    // console.log(comicsList)   
 }
 
 const createComicsItems = (comicsList) => {
     const items = comicsList.map((item, i) => {
-        const {id, name, thumbnail, price, href} = item
+        const {id, name, thumbnail, price} = item
         return (
                 <li key={i} className="comics__item">
-                    <a href={href}>
+                    <Link to={`/comics/${id}`}>
                         <img src={thumbnail} alt={name} className="comics__item-img"/>
                         <div className="comics__item-name">{name}</div>
                         <div className="comics__item-price">{price}$</div>
-                    </a>
+                    </Link>
                 </li>
         )
     })
