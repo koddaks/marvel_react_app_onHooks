@@ -21,7 +21,7 @@ useEffect(() => {
     onRequest(offset, limit, true)
 }, [])
 
-const onRequest = (offset, initial) => {
+const onRequest = (offset, limit, initial) => {
     initial ? setNewComicsLoading(false) : setNewComicsLoading(true)
     getAllComics(offset, limit)
     .then(onComicsListLoaded)
