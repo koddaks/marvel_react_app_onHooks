@@ -34,8 +34,7 @@ const onComicsListLoaded = (newComicsList) => {
     setComicsList(comicsList => [...comicsList, ...newComicsList]);
     setNewComicsLoading(false)
     setOffset(offset + limit)
-    setComicsEnded(comicsEnded => ended) 
-    // console.log(comicsList)   
+    setComicsEnded(comicsEnded => ended)      
 }
 
 const createComicsItems = (comicsList) => {
