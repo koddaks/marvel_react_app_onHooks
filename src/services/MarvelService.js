@@ -6,13 +6,13 @@ const  useMarvelService = () => {
 
 
   const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
-  const _apiKey = '6a44f7c28766c03b37de408a7d605f26';
+  const _apiKey = '1e4e9556af8311bfc23ac338780e0b14';
   const _baseOffset = 210
   const _baseLimit = 9
 
   const getHash = (timeStamp, apikey) => {
     return md5(
-      timeStamp + '2154bb8e0e7d81078f146c75e0f51bb433c116b3' + apikey
+      timeStamp + '6d9c67430590de07aa8ea3ca340585613dd937a5' + apikey
     );
   };
 
